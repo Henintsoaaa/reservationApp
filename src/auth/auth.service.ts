@@ -19,17 +19,12 @@ export class AuthService {
   ) {}
 
   async register(registerDto: RegisterDto): Promise<AuthResponse> {
-    const { username, email, password, role = 'user' } = registerDto;
+    const { name, email, password, role = 'user', phone } = registerDto;
 
     // Check if user already exists
     const existingUser = await this.usersService.findByEmail(email);
     if (existingUser) {
       throw new ConflictException('User with this email already exists');
-    }
-
-    const existingUsername = await this.usersService.findByUsername(username);
-    if (existingUsername) {
-      throw new ConflictException('Username already taken');
     }
 
     // Hash password
@@ -38,10 +33,11 @@ export class AuthService {
 
     // Create user
     const result = await this.usersService.create({
-      username,
+      name,
       email,
       password: hashedPassword,
       role,
+      phone,
     });
 
     if (!result.insertedId) {
@@ -51,15 +47,16 @@ export class AuthService {
     // Generate JWT token
     const user = {
       id: result.insertedId.toString(),
-      username,
+      name,
       email,
       role,
+      phone,
     };
 
     const payload: JwtPayload = {
       sub: user.id,
       email: user.email,
-      username: user.username,
+      name: user.name,
       role: user.role,
     };
 
@@ -88,7 +85,7 @@ export class AuthService {
     const payload: JwtPayload = {
       sub: user._id.toString(),
       email: user.email,
-      username: user.username,
+      name: user.name,
       role: user.role,
     };
 
@@ -96,9 +93,10 @@ export class AuthService {
       access_token: this.jwtService.sign(payload),
       user: {
         id: user._id.toString(),
-        username: user.username,
+        name: user.name,
         email: user.email,
         role: user.role,
+        phone: user.phone,
       },
     };
   }
@@ -116,7 +114,7 @@ export class AuthService {
     const payload: JwtPayload = {
       sub: user.id,
       email: user.email,
-      username: user.username,
+      name: user.name,
       role: user.role,
     };
 
@@ -124,9 +122,10 @@ export class AuthService {
       access_token: this.jwtService.sign(payload),
       user: {
         id: user.id,
-        username: user.username,
+        name: user.name,
         email: user.email,
         role: user.role,
+        phone: user.phone,
       },
     };
   }

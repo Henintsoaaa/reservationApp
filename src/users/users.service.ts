@@ -1,5 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { Db, ObjectId } from 'mongodb';
+import * as bcrypt from 'bcrypt';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 
@@ -19,17 +20,36 @@ export class UsersService {
     return this.db.collection('users').findOne({ email });
   }
 
-  findByUsername(username: string) {
-    return this.db.collection('users').findOne({ username });
-  }
-
   create(user: CreateUserDto) {
-    return this.db.collection('users').insertOne(user);
+    const userData = {
+      ...user,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    };
+    return this.db.collection('users').insertOne(userData);
   }
 
-  update(id: string, user: UpdateUserDto) {
-    return this.db
+  async update(id: string, user: UpdateUserDto) {
+    const updateData: any = {
+      ...user,
+      updatedAt: new Date(),
+    };
+
+    // Hash password if it's being updated
+    if (user.password) {
+      const saltRounds = 12;
+      updateData.password = await bcrypt.hash(user.password, saltRounds);
+    }
+
+    await this.db
       .collection('users')
-      .updateOne({ _id: new ObjectId(id) }, { $set: user });
+      .updateOne({ _id: new ObjectId(id) }, { $set: updateData });
+
+    // Return the updated user data
+    return this.findOne(id);
+  }
+
+  async remove(id: string) {
+    return this.db.collection('users').deleteOne({ _id: new ObjectId(id) });
   }
 }
