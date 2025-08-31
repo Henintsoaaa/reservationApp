@@ -18,10 +18,48 @@ export class ReservationsService {
 
   async findAll(): Promise<any[]> {
     const reservations = await this.db.collection('bookings').find().toArray();
-    return reservations.map((reservation) => ({
-      ...reservation,
-      id: reservation._id.toString(),
-    }));
+
+    // Populate user and venue data for each reservation
+    const populatedReservations = await Promise.all(
+      reservations.map(async (reservation) => {
+        const [user, venue] = await Promise.all([
+          this.db
+            .collection('users')
+            .findOne({ _id: new ObjectId(reservation.userId) }),
+          this.db
+            .collection('venues')
+            .findOne({ _id: new ObjectId(reservation.venueId) }),
+        ]);
+
+        return {
+          ...reservation,
+          id: reservation._id.toString(),
+          user: user
+            ? {
+                id: user._id.toString(),
+                name: user.name,
+                email: user.email,
+                role: user.role,
+                phone: user.phone,
+              }
+            : null,
+          venue: venue
+            ? {
+                id: venue._id.toString(),
+                name: venue.name,
+                description: venue.description,
+                location: venue.location,
+                capacity: venue.capacity,
+                pricePerHour: venue.pricePerHour,
+                createdAt: venue.createdAt,
+                updatedAt: venue.updatedAt,
+              }
+            : null,
+        };
+      }),
+    );
+
+    return populatedReservations;
   }
 
   async findByUserId(userId: string): Promise<any[]> {
@@ -30,23 +68,80 @@ export class ReservationsService {
       .find({ userId: userId })
       .sort({ createdAt: -1 })
       .toArray();
-    return reservations.map((reservation) => ({
-      ...reservation,
-      id: reservation._id.toString(),
-    }));
+
+    // Populate venue data for each reservation
+    const populatedReservations = await Promise.all(
+      reservations.map(async (reservation) => {
+        const venue = await this.db
+          .collection('venues')
+          .findOne({ _id: new ObjectId(reservation.venueId) });
+
+        return {
+          ...reservation,
+          id: reservation._id.toString(),
+          venue: venue
+            ? {
+                id: venue._id.toString(),
+                name: venue.name,
+                description: venue.description,
+                location: venue.location,
+                capacity: venue.capacity,
+                pricePerHour: venue.pricePerHour,
+                createdAt: venue.createdAt,
+                updatedAt: venue.updatedAt,
+              }
+            : null,
+        };
+      }),
+    );
+
+    return populatedReservations;
   }
 
   async findOne(id: string): Promise<any> {
     const reservation = await this.db
       .collection('bookings')
       .findOne({ _id: new ObjectId(id) });
-    if (reservation) {
-      return {
-        ...reservation,
-        id: reservation._id.toString(),
-      };
+
+    if (!reservation) {
+      return null;
     }
-    return reservation;
+
+    // Populate user and venue data
+    const [user, venue] = await Promise.all([
+      this.db
+        .collection('users')
+        .findOne({ _id: new ObjectId(reservation.userId) }),
+      this.db
+        .collection('venues')
+        .findOne({ _id: new ObjectId(reservation.venueId) }),
+    ]);
+
+    return {
+      ...reservation,
+      id: reservation._id.toString(),
+      user: user
+        ? {
+            id: user._id.toString(),
+            name: user.name,
+            email: user.email,
+            role: user.role,
+            phone: user.phone,
+          }
+        : null,
+      venue: venue
+        ? {
+            id: venue._id.toString(),
+            name: venue.name,
+            description: venue.description,
+            location: venue.location,
+            capacity: venue.capacity,
+            pricePerHour: venue.pricePerHour,
+            createdAt: venue.createdAt,
+            updatedAt: venue.updatedAt,
+          }
+        : null,
+    };
   }
 
   async findOneWithOwnershipCheck(id: string, user: any): Promise<any> {
