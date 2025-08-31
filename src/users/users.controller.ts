@@ -63,7 +63,7 @@ export class UsersController {
     @CurrentUser() currentUser: any,
   ) {
     // Users can only update their own profile unless they're admin
-    if (currentUser.id !== id && currentUser.role !== 'admin') {
+    if (currentUser.id !== id) {
       throw new ForbiddenException('You can only update your own profile');
     }
     return this.usersService.update(id, user);
