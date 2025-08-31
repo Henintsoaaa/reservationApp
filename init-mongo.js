@@ -1,9 +1,5 @@
-// MongoDB initialization script for venue booking app
-
-// Switch to reservation_db database
 db = db.getSiblingDB('reservation_db');
 
-// Drop all existing collections to start fresh
 print('Dropping existing collections...');
 const collections = db.getCollectionNames();
 collections.forEach((collection) => {
@@ -11,16 +7,14 @@ collections.forEach((collection) => {
   print('Dropped collection: ' + collection);
 });
 
-// Create users collection
 print('Creating users collection...');
 db.createCollection('users');
 
-// Create sample users
 db.users.insertMany([
   {
     name: 'Henintsoa',
     email: 'henintsoa@example.com',
-    password: 'password', // This should be properly hashed
+    password: 'password',
     role: 'admin',
     phone: '+261340000000',
     createdAt: new Date(),
@@ -29,7 +23,7 @@ db.users.insertMany([
   {
     name: 'John Doe',
     email: 'john@example.com',
-    password: 'password2', // This should be properly hashed
+    password: 'password2',
     role: 'user',
     phone: '+261341111111',
     createdAt: new Date(),
@@ -37,11 +31,9 @@ db.users.insertMany([
   },
 ]);
 
-// Create venues collection
 print('Creating venues collection...');
 db.createCollection('venues');
 
-// Create sample venues
 db.venues.insertMany([
   {
     name: 'CCESSCA',
@@ -69,11 +61,9 @@ db.venues.insertMany([
   },
 ]);
 
-// Create bookings collection
 print('Creating bookings collection...');
 db.createCollection('bookings');
 
-// Get sample data for creating bookings
 const sampleUser = db.users.findOne({ email: 'john@example.com' });
 const sampleVenue = db.venues.findOne({ name: 'Salle de conférence Tana' });
 
@@ -83,49 +73,42 @@ if (sampleUser && sampleVenue) {
     venueId: sampleVenue._id,
     startTime: new Date('2025-09-01T10:00:00Z'),
     endTime: new Date('2025-09-01T12:00:00Z'),
-    status: 'confirmed', // pending | confirmed | cancelled
+    status: 'confirmed',
     totalPrice: 100000,
     createdAt: new Date(),
   });
 }
 
-// Create payments collection
 print('Creating payments collection...');
 db.createCollection('payments');
 
-// Get sample booking for creating payment
 const sampleBooking = db.bookings.findOne({ userId: sampleUser._id });
 
 if (sampleBooking) {
   db.payments.insertOne({
     bookingId: sampleBooking._id,
     amount: 100000,
-    method: 'cash', // cash | mobile_money | card
-    status: 'paid', // pending | paid | failed
+    method: 'cash',
+    status: 'paid',
     createdAt: new Date(),
   });
 }
 
-// Create indexes for better performance
 print('Creating indexes...');
 
-// Users indexes
 db.users.createIndex({ email: 1 }, { unique: true });
 db.users.createIndex({ role: 1 });
 
-// Venues indexes
 db.venues.createIndex({ 'location.city': 1 });
 db.venues.createIndex({ capacity: 1 });
 db.venues.createIndex({ pricePerHour: 1 });
 
-// Bookings indexes
 db.bookings.createIndex({ userId: 1 });
 db.bookings.createIndex({ venueId: 1 });
 db.bookings.createIndex({ startTime: 1, endTime: 1 });
 db.bookings.createIndex({ status: 1 });
-db.bookings.createIndex({ venueId: 1, startTime: 1, endTime: 1 }); // For checking availability
+db.bookings.createIndex({ venueId: 1, startTime: 1, endTime: 1 });
 
-// Payments indexes
 db.payments.createIndex({ bookingId: 1 });
 db.payments.createIndex({ status: 1 });
 db.payments.createIndex({ method: 1 });

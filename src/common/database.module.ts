@@ -16,7 +16,6 @@ const client = new MongoClient(mongoUri);
       useFactory: async () => {
         try {
           await client.connect();
-          console.log('Connected to MongoDB successfully');
           return client.db(dbName);
         } catch (error) {
           console.error('Failed to connect to MongoDB:', error);

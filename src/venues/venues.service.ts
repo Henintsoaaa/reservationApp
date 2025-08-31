@@ -60,10 +60,8 @@ export class VenuesService {
   }
 
   async findAvailableVenues(startTime: Date, endTime: Date): Promise<any[]> {
-    // Get all venues
     const allVenues = await this.findAll();
 
-    // Check availability for each venue
     const availableVenues: any[] = [];
 
     for (const venue of allVenues) {
@@ -93,7 +91,6 @@ export class VenuesService {
         });
 
       if (!conflictingReservation) {
-        // Calculate duration and total price
         const durationHours =
           (endTime.getTime() - startTime.getTime()) / (1000 * 60 * 60);
         const totalPrice = Math.ceil(durationHours) * venue.pricePerHour;

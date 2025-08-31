@@ -35,7 +35,6 @@ export class UsersService {
       updatedAt: new Date(),
     };
 
-    // Hash password if it's being updated
     if (user.password) {
       const saltRounds = 12;
       updateData.password = await bcrypt.hash(user.password, saltRounds);
@@ -45,7 +44,6 @@ export class UsersService {
       .collection('users')
       .updateOne({ _id: new ObjectId(id) }, { $set: updateData });
 
-    // Return the updated user data
     return this.findOne(id);
   }
 

@@ -29,11 +29,6 @@ export class AuthController {
   @Post('login')
   @HttpCode(HttpStatus.OK)
   async login(@Body() loginDto: LoginDto): Promise<AuthResponse> {
-    console.log('Login attempt received:', {
-      email: loginDto.email,
-      password: loginDto.password ? '[PROVIDED]' : '[MISSING]',
-      passwordLength: loginDto.password?.length || 0,
-    });
     return this.authService.login(loginDto);
   }
 

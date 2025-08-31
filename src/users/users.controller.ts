@@ -18,12 +18,11 @@ import { RolesGuard } from '../auth/guards/roles.guard';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 
 @Controller('users')
-@UseGuards(JwtAuthGuard) // Add this to ensure all endpoints are authenticated
+@UseGuards(JwtAuthGuard)
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @UseGuards(RolesGuard)
-  @Roles('admin')
   @Get()
   findAll() {
     return this.usersService.findAll();
@@ -42,7 +41,6 @@ export class UsersController {
 
   @Get(':id')
   async findOne(@Param('id') id: string, @CurrentUser() currentUser: any) {
-    // Users can only see their own profile unless they're admin
     if (currentUser.id !== id && currentUser.role !== 'admin') {
       throw new ForbiddenException('You can only access your own profile');
     }
@@ -62,7 +60,6 @@ export class UsersController {
     @Body() user: UpdateUserDto,
     @CurrentUser() currentUser: any,
   ) {
-    // Users can only update their own profile unless they're admin
     if (currentUser.id !== id) {
       throw new ForbiddenException('You can only update your own profile');
     }
@@ -71,7 +68,6 @@ export class UsersController {
 
   @Delete(':id')
   async remove(@Param('id') id: string, @CurrentUser() currentUser: any) {
-    // Users can only delete their own profile unless they're admin
     if (currentUser.id !== id && currentUser.role !== 'admin') {
       throw new ForbiddenException('You can only delete your own profile');
     }
