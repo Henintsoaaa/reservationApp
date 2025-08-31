@@ -69,15 +69,27 @@ export class AuthService {
   async login(loginDto: LoginDto): Promise<AuthResponse> {
     const { email, password } = loginDto;
 
+    console.log('AuthService.login - Looking for user with email:', email);
+
     // Find user by email
     const user = await this.usersService.findByEmail(email);
     if (!user) {
+      console.log('AuthService.login - No user found with email:', email);
       throw new UnauthorizedException('Invalid credentials');
     }
 
+    console.log('AuthService.login - User found:', {
+      id: user._id,
+      email: user.email,
+      hasPassword: !!user.password,
+    });
+
     // Verify password
     const isPasswordValid = await bcrypt.compare(password, user.password);
+    console.log('AuthService.login - Password valid:', isPasswordValid);
+
     if (!isPasswordValid) {
+      console.log('AuthService.login - Password verification failed');
       throw new UnauthorizedException('Invalid credentials');
     }
 

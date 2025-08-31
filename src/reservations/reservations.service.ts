@@ -17,19 +17,36 @@ export class ReservationsService {
   constructor(@Inject('MONGO') private db: Db) {}
 
   async findAll(): Promise<any[]> {
-    return this.db.collection('bookings').find().toArray();
+    const reservations = await this.db.collection('bookings').find().toArray();
+    return reservations.map((reservation) => ({
+      ...reservation,
+      id: reservation._id.toString(),
+    }));
   }
 
   async findByUserId(userId: string): Promise<any[]> {
-    return this.db
+    const reservations = await this.db
       .collection('bookings')
       .find({ userId: userId })
       .sort({ createdAt: -1 })
       .toArray();
+    return reservations.map((reservation) => ({
+      ...reservation,
+      id: reservation._id.toString(),
+    }));
   }
 
   async findOne(id: string): Promise<any> {
-    return this.db.collection('bookings').findOne({ _id: new ObjectId(id) });
+    const reservation = await this.db
+      .collection('bookings')
+      .findOne({ _id: new ObjectId(id) });
+    if (reservation) {
+      return {
+        ...reservation,
+        id: reservation._id.toString(),
+      };
+    }
+    return reservation;
   }
 
   async findOneWithOwnershipCheck(id: string, user: any): Promise<any> {
@@ -99,7 +116,16 @@ export class ReservationsService {
     const result = await this.db
       .collection('bookings')
       .insertOne(reservationData);
-    return this.db.collection('bookings').findOne({ _id: result.insertedId });
+    const createdReservation = await this.db
+      .collection('bookings')
+      .findOne({ _id: result.insertedId });
+    if (createdReservation) {
+      return {
+        ...createdReservation,
+        id: createdReservation._id.toString(),
+      };
+    }
+    return createdReservation;
   }
 
   async checkAvailability(
@@ -141,7 +167,7 @@ export class ReservationsService {
     }
 
     const conflictingReservation = await this.db
-      .collection('reservations')
+      .collection('bookings')
       .findOne(query);
 
     return !conflictingReservation;
@@ -164,7 +190,7 @@ export class ReservationsService {
     endOfDay.setHours(23, 59, 59, 999);
 
     const reservations = await this.db
-      .collection('reservations')
+      .collection('bookings')
       .find({
         venueId: venueId,
         status: {

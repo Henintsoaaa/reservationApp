@@ -9,13 +9,22 @@ export class VenuesService {
 
   async findAll(): Promise<any[]> {
     const venues = await this.db.collection('venues').find().toArray();
-    return venues;
+    return venues.map((venue) => ({
+      ...venue,
+      id: venue._id.toString(),
+    }));
   }
 
   async findOne(id: string): Promise<any> {
     const venue = await this.db
       .collection('venues')
       .findOne({ _id: new ObjectId(id) });
+    if (venue) {
+      return {
+        ...venue,
+        id: venue._id.toString(),
+      };
+    }
     return venue;
   }
 
@@ -28,6 +37,12 @@ export class VenuesService {
     const insertedVenue = await this.db
       .collection('venues')
       .findOne({ _id: result.insertedId });
+    if (insertedVenue) {
+      return {
+        ...insertedVenue,
+        id: insertedVenue._id.toString(),
+      };
+    }
     return insertedVenue;
   }
 
@@ -85,6 +100,7 @@ export class VenuesService {
 
         availableVenues.push({
           ...venue,
+          id: venue._id.toString(),
           estimatedPrice: totalPrice,
           duration: Math.ceil(durationHours),
         });
