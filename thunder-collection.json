@@ -1,0 +1,230 @@
+{
+  "client": "Thunder Client",
+  "collectionName": "Reservation App API",
+  "dateExported": "2025-08-30T17:39:11.000Z",
+  "version": "1.1",
+  "folders": [
+    {
+      "id": "auth-folder",
+      "name": "Authentication",
+      "containerId": "",
+      "created": "2025-08-30T17:39:11.000Z",
+      "sortNum": 10000
+    },
+    {
+      "id": "users-folder",
+      "name": "Users",
+      "containerId": "",
+      "created": "2025-08-30T17:39:11.000Z",
+      "sortNum": 20000
+    }
+  ],
+  "requests": [
+    {
+      "id": "register-request",
+      "name": "Register User",
+      "url": "http://localhost:3001/auth/register",
+      "method": "POST",
+      "sortNum": 10000,
+      "created": "2025-08-30T17:39:11.000Z",
+      "modified": "2025-08-30T17:39:11.000Z",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "body": {
+        "type": "json",
+        "raw": "{\n  \"name\": \"John Doe\",\n  \"email\": \"john.doe@example.com\",\n  \"password\": \"password123\",\n  \"phone\": \"+261340000000\",\n  \"role\": \"user\"\n}",
+        "form": []
+      },
+      "tests": [],
+      "containerId": "auth-folder"
+    },
+    {
+      "id": "login-request",
+      "name": "Login User",
+      "url": "http://localhost:3001/auth/login",
+      "method": "POST",
+      "sortNum": 20000,
+      "created": "2025-08-30T17:39:11.000Z",
+      "modified": "2025-08-30T17:39:11.000Z",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "body": {
+        "type": "json",
+        "raw": "{\n  \"email\": \"john.doe@example.com\",\n  \"password\": \"password123\"\n}",
+        "form": []
+      },
+      "tests": [],
+      "containerId": "auth-folder"
+    },
+    {
+      "id": "profile-request",
+      "name": "Get Profile",
+      "url": "http://localhost:3001/auth/profile",
+      "method": "GET",
+      "sortNum": 30000,
+      "created": "2025-08-30T17:39:11.000Z",
+      "modified": "2025-08-30T17:39:11.000Z",
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{access_token}}"
+        }
+      ],
+      "body": {
+        "type": "json",
+        "raw": "",
+        "form": []
+      },
+      "tests": [],
+      "containerId": "auth-folder"
+    },
+    {
+      "id": "register-admin-request",
+      "name": "Register Admin User",
+      "url": "http://localhost:3001/auth/register",
+      "method": "POST",
+      "sortNum": 15000,
+      "created": "2025-08-30T17:39:11.000Z",
+      "modified": "2025-08-30T17:39:11.000Z",
+      "headers": [
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "body": {
+        "type": "json",
+        "raw": "{\n  \"name\": \"Admin User\",\n  \"email\": \"admin@example.com\",\n  \"password\": \"admin123\",\n  \"phone\": \"+261341111111\",\n  \"role\": \"admin\"\n}",
+        "form": []
+      },
+      "tests": [],
+      "containerId": "auth-folder"
+    },
+    {
+      "id": "get-users-request",
+      "name": "Get All Users (Admin Only)",
+      "url": "http://localhost:3001/users",
+      "method": "GET",
+      "sortNum": 40000,
+      "created": "2025-08-30T17:39:11.000Z",
+      "modified": "2025-08-30T17:39:11.000Z",
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{access_token}}"
+        }
+      ],
+      "body": {
+        "type": "json",
+        "raw": "",
+        "form": []
+      },
+      "tests": [],
+      "containerId": "users-folder"
+    },
+    {
+      "id": "get-me-request",
+      "name": "Get My Profile",
+      "url": "http://localhost:3001/users/me",
+      "method": "GET",
+      "sortNum": 50000,
+      "created": "2025-08-30T17:39:11.000Z",
+      "modified": "2025-08-30T17:39:11.000Z",
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{access_token}}"
+        }
+      ],
+      "body": {
+        "type": "json",
+        "raw": "",
+        "form": []
+      },
+      "tests": [],
+      "containerId": "users-folder"
+    },
+    {
+      "id": "get-user-by-id-request",
+      "name": "Get User by ID",
+      "url": "http://localhost:3001/users/{{user_id}}",
+      "method": "GET",
+      "sortNum": 60000,
+      "created": "2025-08-30T17:39:11.000Z",
+      "modified": "2025-08-30T17:39:11.000Z",
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{access_token}}"
+        }
+      ],
+      "body": {
+        "type": "json",
+        "raw": "",
+        "form": []
+      },
+      "tests": [],
+      "containerId": "users-folder"
+    },
+    {
+      "id": "update-user-request",
+      "name": "Update User",
+      "url": "http://localhost:3001/users/{{user_id}}",
+      "method": "PUT",
+      "sortNum": 70000,
+      "created": "2025-08-30T17:39:11.000Z",
+      "modified": "2025-08-30T17:39:11.000Z",
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{access_token}}"
+        },
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "body": {
+        "type": "json",
+        "raw": "{\n  \"name\": \"Updated Name\",\n  \"phone\": \"+261341111111\"\n}",
+        "form": []
+      },
+      "tests": [],
+      "containerId": "users-folder"
+    },
+    {
+      "id": "create-user-admin-request",
+      "name": "Create User (Admin Only)",
+      "url": "http://localhost:3001/users",
+      "method": "POST",
+      "sortNum": 80000,
+      "created": "2025-08-30T17:39:11.000Z",
+      "modified": "2025-08-30T17:39:11.000Z",
+      "headers": [
+        {
+          "name": "Authorization",
+          "value": "Bearer {{access_token}}"
+        },
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "body": {
+        "type": "json",
+        "raw": "{\n  \"name\": \"Admin Created User\",\n  \"email\": \"admin.created@example.com\",\n  \"password\": \"password123\",\n  \"phone\": \"+261343333333\",\n  \"role\": \"user\"\n}",
+        "form": []
+      },
+      "tests": [],
+      "containerId": "users-folder"
+    }
+  ]
+}

@@ -7,9 +7,11 @@ import {
   Put,
   Delete,
   UseGuards,
+  Query,
 } from '@nestjs/common';
 import { VenuesService } from './venues.service';
-import { CreateVenuesDto } from './dto/create-venues.dto';
+import { CreateVenueDto } from './dto/create-venues.dto';
+import { UpdateVenueDto } from './dto/update-venue.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Public } from '../auth/decorators/public.decorator';
@@ -26,6 +28,17 @@ export class VenuesController {
     return this.venuesService.findAll();
   }
 
+  @Get('available')
+  @Public()
+  async findAvailable(
+    @Query('startTime') startTime: string,
+    @Query('endTime') endTime: string,
+  ): Promise<any[]> {
+    const start = new Date(startTime);
+    const end = new Date(endTime);
+    return this.venuesService.findAvailableVenues(start, end);
+  }
+
   @Get(':id')
   @Public()
   async findOne(@Param('id') id: string): Promise<any> {
@@ -34,17 +47,17 @@ export class VenuesController {
 
   @Post()
   @Roles('admin')
-  async create(@Body() createVenuesDto: CreateVenuesDto): Promise<any> {
-    return this.venuesService.create(createVenuesDto);
+  async create(@Body() createVenueDto: CreateVenueDto): Promise<any> {
+    return this.venuesService.create(createVenueDto);
   }
 
   @Put(':id')
   @Roles('admin')
   async update(
     @Param('id') id: string,
-    @Body() updateVenuesDto: CreateVenuesDto,
+    @Body() updateVenueDto: UpdateVenueDto,
   ): Promise<any> {
-    return this.venuesService.update(id, updateVenuesDto);
+    return this.venuesService.update(id, updateVenueDto);
   }
 
   @Delete(':id')

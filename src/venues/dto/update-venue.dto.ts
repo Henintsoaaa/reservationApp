@@ -4,44 +4,47 @@ import {
   IsNumber,
   IsObject,
   ValidateNested,
+  IsOptional,
   Min,
-  MaxLength,
 } from 'class-validator';
 import { Type } from 'class-transformer';
 
-export class LocationDto {
+class LocationDto {
   @IsString()
   @IsNotEmpty()
-  @MaxLength(255)
-  address: string;
+  @IsOptional()
+  address?: string;
 
   @IsString()
   @IsNotEmpty()
-  @MaxLength(100)
-  city: string;
+  @IsOptional()
+  city?: string;
 }
 
-export class CreateVenueDto {
+export class UpdateVenueDto {
   @IsString()
   @IsNotEmpty()
-  @MaxLength(100)
-  name: string;
+  @IsOptional()
+  name?: string;
 
   @IsString()
   @IsNotEmpty()
-  @MaxLength(500)
-  description: string;
+  @IsOptional()
+  description?: string;
 
   @IsObject()
   @ValidateNested()
   @Type(() => LocationDto)
-  location: LocationDto;
+  @IsOptional()
+  location?: LocationDto;
 
   @IsNumber()
   @Min(1)
-  capacity: number;
+  @IsOptional()
+  capacity?: number;
 
   @IsNumber()
   @Min(0)
-  pricePerHour: number;
+  @IsOptional()
+  pricePerHour?: number;
 }
