@@ -4,7 +4,7 @@ import { MongoClient } from 'mongodb';
 const mongoUri =
   process.env.MONGODB_URI ||
   'mongodb://root:azertyuiop@localhost:27017/?authSource=admin';
-const dbName = process.env.MONGODB_DB || 'reservation_db';
+const dbName = process.env.MONGODB_DB || 'reservation_events_db';
 
 const client = new MongoClient(mongoUri);
 
