@@ -7,10 +7,14 @@ import {
 import { Db, ObjectId } from 'mongodb';
 import { CreateEventDto } from './dto/create-event.dto';
 import { UpdateEventDto } from './dto/update-event.dto';
+import { Redis } from 'ioredis';
 
 @Injectable()
 export class EventsService {
-  constructor(@Inject('MONGO') private db: Db) {}
+  constructor(
+    @Inject('MONGO') private db: Db,
+    @Inject('REDIS') private redis: Redis,
+  ) {}
 
   async findAll(): Promise<any[]> {
     const events = await this.db.collection('events').find().toArray();
@@ -21,7 +25,6 @@ export class EventsService {
   }
 
   async findOne(id: string): Promise<any> {
-    // Valider que l'ID est un ObjectId valide
     if (!ObjectId.isValid(id)) {
       throw new BadRequestException('Invalid event ID format');
     }
@@ -51,17 +54,35 @@ export class EventsService {
       .collection('events')
       .findOne({ _id: result.insertedId });
 
-    if (insertedEvent) {
-      return {
-        ...insertedEvent,
-        id: insertedEvent._id.toString(),
-      };
+    if (!insertedEvent) {
+      return null;
     }
-    return insertedEvent;
+
+    const eventId = insertedEvent._id.toString();
+
+    await this.redis.set(
+      `event:${eventId}:availableSeats`,
+      insertedEvent.availableSeats.toString(),
+    );
+
+    await this.redis.hset(`event:${eventId}`, {
+      id: eventId,
+      title: insertedEvent.title,
+      category: insertedEvent.category,
+      date: insertedEvent.date,
+      venue: JSON.stringify(insertedEvent.venue),
+      totalSeats: insertedEvent.totalSeats.toString(),
+      availableSeats: insertedEvent.availableSeats.toString(),
+      status: insertedEvent.status,
+    });
+
+    return {
+      ...insertedEvent,
+      id: eventId,
+    };
   }
 
   async update(id: string, eventData: UpdateEventDto): Promise<any> {
-    // Valider que l'ID est un ObjectId valide
     if (!ObjectId.isValid(id)) {
       throw new BadRequestException('Invalid event ID format');
     }
@@ -84,7 +105,6 @@ export class EventsService {
   }
 
   async delete(id: string): Promise<any> {
-    // Valider que l'ID est un ObjectId valide
     if (!ObjectId.isValid(id)) {
       throw new BadRequestException('Invalid event ID format');
     }
