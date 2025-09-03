@@ -25,7 +25,7 @@ export class BookingsController {
   @Post()
   @Roles('user', 'admin')
   create(@Body() createBookingDto: CreateBookingDto, @CurrentUser() user: any) {
-    return this.bookingsService.create(createBookingDto);
+    return this.bookingsService.create(createBookingDto, { userId: user.id });
   }
 
   @Get()
@@ -68,8 +68,20 @@ export class BookingsController {
     @Body() updateBookingDto: UpdateBookingDto,
     @CurrentUser() user: any,
   ) {
-    return this.bookingsService.remove(id, updateBookingDto, {
+    return this.bookingsService.remove(id, {
       userId: user.id,
     });
+  }
+
+  @Get('stats/:eventId')
+  @Roles('admin', 'user')
+  getEventStats(@Param('eventId') eventId: string) {
+    return this.bookingsService.getEventStats(eventId);
+  }
+
+  @Get('available-seats/:eventId')
+  @Roles('admin', 'user')
+  getAvailableSeats(@Param('eventId') eventId: string) {
+    return this.bookingsService.getAvailableSeats(eventId);
   }
 }
