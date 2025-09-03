@@ -6,7 +6,6 @@ import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { BookingsModule } from './bookings/bookings.module';
 import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
-import { VenuesModule } from './venues/venues.module';
 import { CacheModule } from '@nestjs/cache-manager';
 import { EventsModule } from './events/events.module';
 import { ReviewsModule } from './reviews/reviews.module';
@@ -17,7 +16,6 @@ import { ReviewsModule } from './reviews/reviews.module';
     AuthModule,
     UsersModule,
     BookingsModule,
-    VenuesModule,
     CacheModule.register({
       isGlobal: true,
     }),
